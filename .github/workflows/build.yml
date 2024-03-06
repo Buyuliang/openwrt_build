@@ -1,0 +1,68 @@
+name: Build
+run-name: Build with openwrt
+
+on:
+  workflow_dispatch:
+    inputs:
+      launchpad:
+        description: use launchpad
+        required: true
+        default: false
+        type: boolean
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get more disk space
+        uses: easimon/maximize-build-space@master
+        with:
+          root-reserve-mb: 2048
+          swap-size-mb: 1024
+          remove-dotnet: 'true'
+          remove-android: 'true'
+          remove-haskell: 'true'
+          remove-codeql: 'true'
+          remove-docker-images: 'true'
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Checkout LFS
+        shell: bash
+        run: git lfs fetch && git lfs checkout
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          export FORCE_UNSAFE_CONFIGURE=1
+          sudo apt-get update && sudo apt-get upgrade -y
+          sudo apt-get install -y build-essential clang flex \
+          g++ gawk gcc-multilib gettext git libncurses5-dev libssl-dev \
+          python3-distutils rsync unzip zlib1g-dev file wget swig \
+          python3-pip git
+
+      - name: download code
+        shell: bash
+        run: |
+          git clone -b openwrt-23.05 https://github.com/Buyuliang/openwrt.git
+
+      - name: Build image
+        shell: bash
+        run: |
+            sudo ./build.sh cluster-box-config && \
+            ./build.sh feeds_update && \
+            ./build.sh feeds_install && \
+            make -j16 V=s
+
+      - name: Upload Image
+        uses: actions/upload-artifact@v3
+        with:
+          name: openwrt-image
+          path: ./bin/targets/ramips/*
+          if-no-files-found: error
+
+      - name: Clean cache
+        shell: bash
+        run: sync && sudo rm -rf ./build_dir && sync
