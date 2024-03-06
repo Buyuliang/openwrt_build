@@ -63,7 +63,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: openwrt-image
-          path: ./bin/targets/ramips/*
+          path: openwrt/bin/targets/ramips/mt7620/openwrt*
           if-no-files-found: error
 
       - name: Clean cache
