@@ -46,7 +46,8 @@ jobs:
       - name: download code
         shell: bash
         run: |
-          git clone -b openwrt-23.05 https://github.com/Buyuliang/openwrt.git
+          git clone -b openwrt-23.05 https://github.com/Buyuliang/openwrt.git && \
+          cd openwrt
 
       - name: Build image
         shell: bash
