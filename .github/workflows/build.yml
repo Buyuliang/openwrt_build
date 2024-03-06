@@ -52,6 +52,7 @@ jobs:
       - name: Build image
         shell: bash
         run: |
+            ls && ls -l ./build.sh
             sudo ./build.sh cluster-box-config && \
             ./build.sh feeds_update && \
             ./build.sh feeds_install && \
