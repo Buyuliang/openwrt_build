@@ -46,12 +46,13 @@ jobs:
       - name: download code
         shell: bash
         run: |
-          git clone -b openwrt-23.05 https://github.com/Buyuliang/openwrt.git && \
-          cd openwrt
+          git clone -b openwrt-23.05 https://github.com/Buyuliang/openwrt.git
+          
 
       - name: Build image
         shell: bash
         run: |
+            cd openwrt 
             ls && ls -l ./build.sh
             sudo ./build.sh cluster-box-config && \
             ./build.sh feeds_update && \
